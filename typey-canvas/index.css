@@ -1,5 +1,21 @@
 
-#my-canvas {
+#canvas_container {
   background: #FF0;
-  border-style: dotted;
+  outline: black 3px solid;
+    display: none;
+  
+}
+p {
+  border: black 1px solid;
+  }
+
+#my-canvas {
+    position: absolute;
+    z-index: 1;
+}
+
+#keyboard_bringer {
+    position: absolute;
+    z-index: 2;
+    display: none;
 }
