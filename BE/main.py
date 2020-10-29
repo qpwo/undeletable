@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from fastapi_utils.tasks import repeat_every
 import time
 import random
+import hashlib
 
 
 
@@ -69,7 +70,8 @@ def authenticate(args: Login):
         return False, 'userid unknown'
     # Incorrect password
     if passwords[args.userid] != args.password:
-        return False, 'password incorrect. Password is ' + passwords[args.userid];
+        #return False, 'password incorrect. Password is ' + passwords[args.userid];
+        return False, 'password incorrect. Enter username with blank password to reset.'
     # Make the first entry for this new user
     initialize_user_if_not_initialized(args.userid)
     return True, 'okay'
@@ -145,15 +147,18 @@ def write_user_data():
 
 #File server
 
+def userid_to_alias(userid):
+    return hashlib.sha224(str.encode(userid)).hexdigest()[-5:]
 
 @app.get("/wall")
 def wall():
     html_parts = []
     for user, entries in data.items():
+        alias = userid_to_alias(user)
         for (is_private, time_stamp, text) in entries:
             if not is_private and text.strip() != "":
                 html_parts.append([time_stamp,
-                    f'<p class="nospace">{user} at {time.ctime(time_stamp)}</p>' +
+                    f'<p class="nospace">{alias} at {time.ctime(time_stamp)}</p>' +
                     f'<p class="box">{newline_to_br(text)}</p>'])
     html_parts.sort(key=lambda x: x[0])
 
