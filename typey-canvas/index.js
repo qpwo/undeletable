@@ -1,5 +1,8 @@
-userid = "max";
-password = "foo";
+//userid = "max";
+//password = "foo";
+userid = "";
+password = "";
+is_private = false;
 
 function api(url, data, callback)
 {
@@ -17,22 +20,39 @@ function api(url, data, callback)
         .catch(function(res){ console.log(res) })
 }
 
-function login(e) {
-    console.log("loggin in");
-    api("/commit_entry/", {userid,password}, ()=>{})
+function commit_entries() {
+    api("/commit_entry/", {userid,password,is_private}, ()=>{})
+}
 
+function has_prop(obj, prop) {
+    return Object.keys(obj).indexOf(prop) !== -1
+}
+
+function get_entries() {
     api("/get_entries/", {userid,password},
         function(data) {
-            document.getElementById("old_posts").innerHTML = data;
-            show_canvas();
+            if (has_prop(data, 'detail')) {
+                document.getElementById("old_posts").innerHTML = data.detail
+                hide_canvas()
+            } else {
+                document.getElementById("old_posts").innerHTML = data
+                show_canvas()
+            }
         });
+}    
+
+function login(e) {
+    console.log("loggin in");
+    commit_entries()
+    get_entries()
 }
 
 function commit_canvas() {
     x = 10;
     y = h;
     context.clearRect(0, 0, canvas.width, canvas.height);
-    login();
+    commit_entries()
+    get_entries()
 }
 
 
@@ -50,6 +70,7 @@ hide_canvas()
 var canvas = document.getElementById("my_canvas");
 var userid_box = document.getElementById("userid");
 var password_box = document.getElementById("password");
+var private_checkbox = document.getElementById("private");
 var keyboard_bringer = document.getElementById("keyboard_bringer");
 var context = canvas.getContext("2d");
 context.fillStyle = "blue";
@@ -129,6 +150,17 @@ document.getElementById("userid").addEventListener("change", (e) => {userid = e.
 document.getElementById("password").addEventListener("change", (e) => {password = e.target.value})
 document.getElementById("login").addEventListener("click", login);
 document.getElementById("write_another").addEventListener("click", commit_canvas);
+
+private_checkbox.onclick = function () {
+    console.log("clicked private che3ckpox")
+    if ( this.checked ) {
+        is_private = true
+    } else {
+        is_private = false
+    }
+    commit_canvas()
+}
+
 
 window.setInterval(function(){
     drawcursor();
