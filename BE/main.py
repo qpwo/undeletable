@@ -59,7 +59,7 @@ def initialize_user_if_not_initialized(userid):
 
 def authenticate(args: Login):
     # setting new password
-    if args.password.strip() == '' and args.userid.strip() != '':
+    if args.password.strip() == '' and args.userid.strip() != '' and args.userid != "guest":
         new_password = generate_password()
         passwords[args.userid] = new_password
         send_text(args.userid, new_password)
