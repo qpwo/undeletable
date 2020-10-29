@@ -1,22 +1,29 @@
 userid = "max";
 password = "foo";
 
-function get(theUrl, callback)
+function api(url, data, callback)
 {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function () {if (xmlHttp.status == 200) callback(xmlHttp.responseText);};
-    xmlHttp.open("get", theUrl, true); // true for asynchronous 
-    xmlHttp.send(null);
-    return xmlHttp;
+    const bullshit = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(data)
+    }
+    fetch(url, bullshit)
+        .then(response => response.json())
+        .then(callback)
+        .catch(function(res){ console.log(res) })
 }
 
 function login(e) {
     console.log("loggin in");
-    get("/commit_entry?userid=" + userid + "&password=" + password, () => {})
+    api("/commit_entry/", {userid,password}, ()=>{})
 
-    get("/get_entries?userid=" + userid + "&password=" + password, 
-        function(text) {
-            document.getElementById("old_posts").innerHTML = text;
+    api("/get_entries/", {userid,password},
+        function(data) {
+            document.getElementById("old_posts").innerHTML = data;
             show_canvas();
         });
 }
@@ -54,7 +61,7 @@ var under = 8
 var y = h;
 
 function commit_char(c) {
-    get("/commit_char?charr=" + encodeURI(c) + "&userid=" + userid + "&password=" + password, () => {})
+    api("/commit_char/", {charr:c, userid, password}, () => {})
 }
     
 function newline() {
