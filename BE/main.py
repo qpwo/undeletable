@@ -28,6 +28,9 @@ data, passwords = json.load(open('datapasswords.json', 'r'))
 
 admins = ['max']
 
+firstnames = [line.strip() for line in open('firstnames.txt')]
+lastnames = [line.strip() for line in open('lastnames.txt')]
+
 
 def generate_password():
     silly_word = random.choice(['snoopy', 'floppy', 'pants'])
@@ -148,7 +151,8 @@ def write_user_data():
 #File server
 
 def userid_to_alias(userid):
-    return hashlib.sha224(str.encode(userid)).hexdigest()[-5:]
+    numbers = list(hashlib.sha224(str.encode(userid)).digest())
+    return firstnames[numbers[0]] + ' ' + lastnames[numbers[1] % len(lastnames)]
 
 @app.get("/wall")
 def wall():
