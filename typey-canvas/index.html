@@ -5,34 +5,49 @@
 </head>
 
 <body>
-    <h1>Typryter.com</h1>
+    <h1>Undeletable.net</h1>
     <p> Want to see public post? <a href="wall">Click here to visit the Wall</a></p>
-    Username: <input type="text" id="userid">
-    Password: <input type="text" id="password">
-    <button id="login">Login</button>
-    <br>
-    <br>
-    Private? <input type="checkbox" id="private">
-    <br>
-    <br>
-    <div id="canvas_container">
-        <input type = "text" id = "keyboard_bringer">
-        <canvas id="my_canvas" width="500" height="120"></canvas>
+    <div id="loginArea">
+        <p> Login Here </p>
+        <div> Phone number: <input type="text" id="userid1"> </div>
+        <div> password: <input type="text" id="password1"> </div>
+        <button id="login1">Login</button>
         <br>
-        <button id="write_another">Write Another</button>
+        <p> Login with text message </p>
+        <div> Phone number: <input type="text" id="userid2"> </div>
+        <div> <button id="sendText">Send Text</button> </div>
+        <div id="textPasswordArea" style="display:none;">
+            Password: <input type="text" id="password2">
+            <div> 
+                <button id="login2">Login</button> 
+                <button id="sendTextAgain">Send Text Again</button> 
+            </div>
+        </div>
     </div>
-    <script src="index.js"></script>
-
-    <br>
-    <div id="old_posts">
-        <p>New here? No need to make an account - just enter your phone number
-        in the login box with no password and we'll text you one.
-        <p>Psst that's not true - it goes to me, so you'll have to get it from me for now.
-        <div>
+    <div id="appArea" style="display:none;">
+        <button id="logout">Log Out</button>
+        <br>
+        <br>
+        Private? <input type="checkbox" id="private">
+        <br>
+        <br>
+        <div id="canvasContainer">
+            <input type = "text" id = "keyboard_bringer">
+            <canvas id="my_canvas" width="500" height="120"></canvas>
+            <br>
+            <button id="write_another">Write Another</button>
+        </div>
+        <script src="index.js"></script>
+        <br>
+        <div id="old_posts">
+        </div>
+    </div>
             <h2>About</h2>
+            <p>New here? No need to make an account - just enter your phone number and hit "send
+            text" and we'll send you a password, then you can log in.
             <p>Every letter written is saved forever. No backspace. If you close the window
             or refresh, your writing is posted forver.
 
             <p>It's impossibe to get logged out because your account is tied to your phone 
             number (which will never be shared publically)
-            <p> </body>
+            </body>
