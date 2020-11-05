@@ -7,7 +7,18 @@ from fastapi_utils.tasks import repeat_every
 import time
 import random
 import hashlib
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
+import os
+from twilio.rest import Client
+
+# Find these values at https://twilio.com/user/account
+# To set up environmental variables, see http://twil.io/secure
+secrets = json.load(open("secrets.json"))
+account_sid = secrets["sid"]
+auth_token = secrets["token"]
+client = Client(account_sid, auth_token)
 
 
 
@@ -24,7 +35,10 @@ app = FastAPI()
 #
 
 # The current type for data entries is a list of [is_private (bool), timestamp (int), text (str)]
+
 data, passwords = json.load(open('datapasswords.json', 'r'))
+
+tokens = dict()
 
 admins = ['max']
 
@@ -39,12 +53,28 @@ def generate_password():
     return silly_word + serious_word + security
 
 def send_text(number, message):
-    ''' This just prints it to the console for now, but in the future will
-    actually send a text message'''
     print('===================')
     print('Text to', number)
     print(message)
+    if len(number) == 10 and all([c in '0123456789' for c in number]):
+        print("Send an actual Text message! Yay!")
+        client.api.account.messages.create(
+                to="+1"+number,
+                from_="+12059740720",
+                body=message)
     print('===================')
+
+class UserId(BaseModel):
+    userid: str
+
+class Token(BaseModel):
+    token: str
+
+class TokenWithChar(Token):
+    charr: str
+
+class TokenWithIsPrivate(Token):
+    is_private: bool
 
 class Login(BaseModel):
     userid: str
@@ -56,46 +86,10 @@ class LoginWithChar(Login):
 class LoginWithIsPrivate(Login):
     is_private: bool
 
+
 def initialize_user_if_not_initialized(userid):
     if userid not in data:
         data[userid] = [[False, time.time(), ""]]
-
-def authenticate(args: Login):
-    # setting new password
-    if args.password.strip() == '' and args.userid.strip() != '':
-        new_password = generate_password()
-        passwords[args.userid] = new_password
-        send_text(args.userid, new_password)
-        initialize_user_if_not_initialized(args.userid)
-        return False, f'your password has been texted to {args.userid}'
-    # Invalid username 
-    if args.userid not in passwords:
-        return False, 'userid unknown'
-    # Incorrect password
-    if passwords[args.userid] != args.password:
-        #return False, 'password incorrect. Password is ' + passwords[args.userid];
-        return False, 'password incorrect. Enter username with blank password to reset.'
-    # Make the first entry for this new user
-    initialize_user_if_not_initialized(args.userid)
-    return True, 'okay'
-
-# Admin commands
-@app.post("/save/")
-async def save(args: Login):
-    okay, msg = authenticate(args) 
-    if not okay: return msg
-    if args.userid not in admins:
-        return 'ur not an admin.'
-    json.dump([data, passwords], open('datapasswords.json', 'w'))
-
-@app.post("/load/")
-async def load(args: Login):
-    okay, msg = authenticate(args) 
-    if not okay: return msg
-    if args.userid not in admins:
-        return 'ur not an admin.'
-
-    data, passwords = json.load(open('datapasswords.json', 'r'))
 
 def newline_to_br(text):
     return text.replace('\n', '<br>')
@@ -106,35 +100,66 @@ def style_if_private(is_private):
     else:
         return ''
 
-#User API
-@app.post("/get_entries/")
-async def get_entries(args: Login):
-    okay, msg = authenticate(args) 
-    if not okay: 
-        raise HTTPException(status_code=400, detail=msg)
 
+def make_token():
+    return str(random.randrange(0,23048239048))
+
+#User API
+@app.post("/get_token/")
+async def get_token(args: Login):
+    print(args)
+    print(passwords)
+    if args.userid in passwords:
+        if passwords[args.userid].strip() == args.password.strip():
+            token = make_token()
+            tokens[token] = args.userid
+            return token
+        else:
+            return HTTPException(status_code=400, detail="Wrong passowrd")
+    else:
+        return HTTPException(status_code=400, detail="Invalid username")
+
+@app.post("/logout/")
+async def logout(args: Token):
+    print(args)
+    tokens.pop(args.token, None)
+
+
+@app.post("/send_text/")
+async def send_text_(args: UserId):
+    new_password = generate_password()
+    passwords[args.userid] = new_password
+    send_text(args.userid, 'Your new password is: ' + new_password)
+    initialize_user_if_not_initialized(args.userid)
+
+def check_token(args):
+    if args.token not in tokens:
+        raise HTTPException(status_code=400, detail="invalid token please log in again")
+    else:
+        return tokens[args.token]
+
+@app.post("/get_entries/")
+async def get_entries(args: Token):
+    userid = check_token(args)
     return ''.join(
             [f'<p class="box" {style_if_private(x[0])}>{newline_to_br(x[2])}</p>' 
-                for x in data[args.userid][::-1] if x[2].strip() != ""])
+                for x in data[userid][::-1] if x[2].strip() != ""])
 
 
 @app.post("/commit_char/")
-async def commit_char(args: LoginWithChar):
-    okay, msg = authenticate(args) 
-    if not okay: return msg
+async def commit_char(args: TokenWithChar):
+    userid = check_token(args)
 
     # Add the new char onto the user's last post
-    data[args.userid][-1][2] = data[args.userid][-1][2] + args.charr
+    data[userid][-1][2] = data[userid][-1][2] + args.charr
     return 'okay'
 
-
 @app.post("/commit_entry/")
-async def commit_entry(args: LoginWithIsPrivate):
-    okay, msg = authenticate(args)
-    if not okay: return msg
+async def commit_entry(args: TokenWithIsPrivate):
+    userid = check_token(args)
 
     # Make a new post
-    data[args.userid].append([args.is_private, time.time(), ""])
+    data[userid].append([args.is_private, time.time(), ""])
     return 'okay'
 
 
@@ -171,7 +196,7 @@ def wall():
 <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <h1>Undeltable</h1>
+    <h1>Undeltable.net</h1>
     <h1>Latest Public Posts</h1>'''
     + ''.join([post for t,post in html_parts[::-1]])
     + '</body>')

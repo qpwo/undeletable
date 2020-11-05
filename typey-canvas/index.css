@@ -1,9 +1,7 @@
 
-#canvas_container {
+#canvasContainer {
   background: #FF0;
   outline: black 3px solid;
-    display: none;
-  
 }
 .box {
   border: black 1px solid;
