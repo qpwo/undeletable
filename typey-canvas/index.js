@@ -116,15 +116,16 @@ async function get_entries(token) {
 
 // returns success
 async function get_token(userid,password) {
-    res = async_api("/get_token/", {userid,password})
+    res = await async_api("/get_token/", {userid,password})
     if (is_error(res)) {
         console.log("did not get token good")
         console.log(res)
+        setCookie("token", "", 1)
         return false
     } else {
         console.log("got token good")
         console.log(res)
-        setCookie("token", await res, 1)
+        setCookie("token", res, 1)
         return true
     }
 }
@@ -263,7 +264,7 @@ private_checkbox.addEventListener("change", commit_canvas)
 
 link_enter_key_to_button(userid1, login1)
 link_enter_key_to_button(password1, login1)
-link_enter_key_to_button(userid2, login2)
+link_enter_key_to_button(userid2, sendText)
 link_enter_key_to_button(password2, login2)
 
 
