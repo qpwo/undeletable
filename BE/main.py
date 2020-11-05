@@ -20,6 +20,8 @@ account_sid = secrets["sid"]
 auth_token = secrets["token"]
 client = Client(account_sid, auth_token)
 
+words = open("words.txt").readlines()
+
 
 
 app = FastAPI()
@@ -47,10 +49,11 @@ lastnames = [line.strip() for line in open('lastnames.txt')]
 
 
 def generate_password():
-    silly_word = random.choice(['snoopy', 'floppy', 'pants'])
-    serious_word = random.choice(['password', 'rake', 'nineteen'])
-    security = random.choice(['3421', '&&12', '*uwu*'])
-    return silly_word + serious_word + security
+    return '-'.join([random.choice(words).strip() for _ in range(3)])
+
+print("sample passwords:")
+for i in range(5):
+    print(generate_password())
 
 def send_text(number, message):
     print('===================')
