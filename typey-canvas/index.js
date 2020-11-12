@@ -206,12 +206,17 @@ function erasecursor() {
     context.clearRect(x + 1, y - h, 12, h);
 }
 
+const dashWidth = context.measureText('-').width
 function drawchar(c) {
     commit_char(gt(), c);
     erasecursor();
     dx = context.measureText(c).width;
     drawblock(x, "white");
-    if (x + 2 * dx >= canvas.width) {
+    if (x + 2 * dx >= canvas.width - dashWidth) {
+        if (c != ' ') {
+            context.fillText('-', x, y);
+            x += dashWidth;
+        }
         newline();
     }
     context.fillStyle = "blue";
