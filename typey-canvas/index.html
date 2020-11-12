@@ -1,21 +1,21 @@
 <head>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
     <h1>Undeletable.net</h1>
-    <p> Want to see public post? <a href="wall">Click here to visit the Wall</a></p>
+    <p>Want to see public post? <a href="wall">Click here to visit the Wall</a></p>
     <div id="loginArea">
-        <p> Login Here </p>
-        <div> Phone number: <input type="text" id="userid1"> </div>
-        <div> password: <input type="text" id="password1"> </div>
+        <p>Login Here</p>
+        <div>Phone number:<input type="text" id="userid1"></div>
+        <div>password:<input type="text" id="password1"></div>
         <button id="login1">Login</button>
-        <br>
-        <p> Login with text message </p>
-        <div> Phone number: <input type="text" id="userid2"> </div>
-        <div> <button id="sendText">Send Text</button> </div>
-        <div id="textPasswordArea" style="display:none;"> Password: <input type="text" id="password2">
+        <p>Login with text message</p>
+        <div>Phone number:<input type="text" id="userid2"></div>
+        <div><button id="sendText">Send Text</button></div>
+        <div id="textPasswordArea" style="display:none;">Password:<input type="text" id="password2">
             <div>
                 <button id="login2">Login</button>
                 <button id="sendTextAgain">Send Text Again</button>
@@ -23,18 +23,13 @@
         </div>
     </div>
     <div id="appArea" style="display:none;">
-        <button id="logout">Log Out</button>
-        <br>
-        <br> Private? <input type="checkbox" id="private">
-        <br>
-        <br>
+        <div><button id="logout">Log Out</button> Private? <input type="checkbox" id="private"></div>
         <div id="canvasContainer">
             <input type="text" id="keyboard_bringer">
             <canvas id="my_canvas"></canvas>
-            <button id="write_another">Write Another</button>
+            <button id="write_another">Submit</button>
         </div>
         <script src="index.js"></script>
-        <br>
         <div id="old_posts">
         </div>
     </div>

@@ -4,6 +4,8 @@ An app that allows you to append to a notebook of sorts, but prohibits you from 
 ## 2020-11-12
 
 - [ ] Keyboard thing working on mobile
+- [ ] Make checkbox behavior clear
+- [ ] 
 
 ## Uses
 - Write a cookbook

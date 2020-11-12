@@ -1,17 +1,20 @@
 body {
   padding: 1em;
+  max-width: 50em;
+  margin: 1em auto 10em auto;
 }
 
 #canvasContainer {
   background: #FF9;
-  outline: black 3px solid;
+  border: black 3px solid;
   max-width: 20em;
   height: 20em;
   position: relative;
+  margin: 1em auto;
 }
+
 .box {
   border: black 1px solid;
-  margin-top: 0;
   padding: 1em;
 }
 
