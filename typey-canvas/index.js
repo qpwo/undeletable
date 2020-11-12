@@ -1,46 +1,49 @@
-const canvasContainer = document.getElementById("canvasContainer")
-const canvas = document.getElementById("my_canvas");
-const userid_box = document.getElementById("userid");
-const password_box = document.getElementById("password");
-const private_checkbox = document.getElementById("private");
-const keyboard_bringer = document.getElementById("keyboard_bringer");
+function get(string) {
+    return document.getElementById(string)
+}
+
+const canvasContainer = get("canvasContainer")
+const canvas = get("my_canvas");
+const userid_box = get("userid");
+const password_box = get("password");
+const private_checkbox = get("private");
+const keyboard_bringer = get("keyboard_bringer");
 const context = canvas.getContext("2d");
 
-const userid1 = document.getElementById("userid1")
-const password1 = document.getElementById("password1")
-const login1 = document.getElementById("login1")
-const userid2 = document.getElementById("userid2")
-const password2 = document.getElementById("password2")
-const login2 = document.getElementById("login2")
-const textPasswordArea = document.getElementById("textPasswordArea")
-const sendText = document.getElementById("sendText")
-const sendTextAgain = document.getElementById("sendTextAgain")
-const appArea = document.getElementById("appArea")
-const loginArea = document.getElementById("loginArea")
-const logoutButton = document.getElementById("logout")
+const userid1 = get("userid1")
+const password1 = get("password1")
+const login1 = get("login1")
+const userid2 = get("userid2")
+const password2 = get("password2")
+const login2 = get("login2")
+const textPasswordArea = get("textPasswordArea")
+const sendText = get("sendText")
+const sendTextAgain = get("sendTextAgain")
+const appArea = get("appArea")
+const loginArea = get("loginArea")
+const logoutButton = get("logout")
 
 
 // from w3 schools
 function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-  var expires = "expires="+d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    document.cookie = `${cname}=${cvalue};expires=${d.toUTCString()};path=/`
 }
 
 function getCookie(cname) {
-  var name = cname + "=";
-  var ca = document.cookie.split(';');
-  for(var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
+    return "";
 }
 
 // shorthand get token
@@ -63,7 +66,7 @@ function typing_mode(token) {
 }
 function link_enter_key_to_button(element, button) {
     element.addEventListener("keyup", event => {
-        if(event.key !== "Enter") 
+        if (event.key !== "Enter")
             return
         button.click()
         event.preventDefault()
@@ -91,7 +94,7 @@ async function async_api(url, data) {
 
 function commit_entries(token) {
     var is_private = private_checkbox.checked
-    async_api("/commit_entry/", {token,is_private}, ()=>{})
+    async_api("/commit_entry/", { token, is_private }, () => { })
 }
 
 function has_prop(obj, prop) {
@@ -104,7 +107,7 @@ function is_error(res) {
 }
 
 async function get_entries(token) {
-    res = await async_api("/get_entries/", {token})
+    res = await async_api("/get_entries/", { token })
     if (is_error(res)) {
         document.getElementById("old_posts").innerHTML = res.detail
         hide(canvasContainer)
@@ -115,8 +118,8 @@ async function get_entries(token) {
 }
 
 // returns success
-async function get_token(userid,password) {
-    res = await async_api("/get_token/", {userid,password})
+async function get_token(userid, password) {
+    res = await async_api("/get_token/", { userid, password })
     if (is_error(res)) {
         console.log("did not get token good")
         console.log(res)
@@ -140,7 +143,7 @@ async function send_text(userid) {
         alert("That's not a phone number. Type only digits, no country code (10 digits).")
         return false
     }
-    res = async_api("/send_text/", {userid})
+    res = async_api("/send_text/", { userid })
     if (is_error(res)) {
         console.log(res)
         return false
@@ -150,13 +153,13 @@ async function send_text(userid) {
 }
 async function logout(token) {
     setCookie("token", "", 1)
-    async_api("/logout/", {token})
+    async_api("/logout/", { token })
     show(loginArea)
     hide(appArea)
 }
 
 function commit_char(token, c) {
-    async_api("/commit_char/", {token, charr:c})
+    async_api("/commit_char/", { token, charr: c })
 }
 
 
@@ -182,27 +185,25 @@ var h = 16;
 var under = 8
 var y = h;
 
-    
+
 function newline() {
-    commit_char(gt(), "\n");
     erasecursor();
     x = 10;
-    y += h+under;
-    drawcursor();
+    y += h + under;
 }
 function drawblock(xx, yy, color) {
     context.beginPath();
-    context.rect(xx, yy-h/4, 10, h/4);
+    context.rect(xx, yy - h / 4, 10, h / 4);
     context.fillStyle = color;
     context.fill();
 }
 
 function drawcursor() {
-    drawblock(x+2, y, "blue");
+    drawblock(x + 2, y, "blue");
 }
 
 function erasecursor() {
-    context.clearRect(x+1, y-h, 12, h);
+    context.clearRect(x + 1, y - h, 12, h);
 }
 
 function drawchar(c) {
@@ -210,7 +211,7 @@ function drawchar(c) {
     erasecursor();
     dx = context.measureText(c).width;
     drawblock(x, "white");
-    if (x+2*dx >= canvas.width) {
+    if (x + 2 * dx >= canvas.width) {
         newline();
     }
     context.fillStyle = "blue";
@@ -230,6 +231,7 @@ function drawkeypress(e) {
     if (e.key == "Backspace" || e.key == "Delete") {
         alert("NO! YOU CAN'T DO THAT!");
     } else if (e.key == "Enter") {
+        commit_char(gt(), "\n")
         newline();
     } else if (e.key == "Space") {
         drawchar(" ");
@@ -243,16 +245,16 @@ function drawkeypress(e) {
 }
 
 // blink the cursor
-window.setInterval(function(){
+window.setInterval(function () {
     drawcursor();
     setTimeout(erasecursor, 500)
 }, 1000);
 
 // makes is so all keypresses are used for the canvas
 window.addEventListener("keypress", drawkeypress, true);
-window.addEventListener("keyup", (e)=>{e.preventDefault()}, true);
+window.addEventListener("keyup", (e) => { e.preventDefault() }, true);
 // trying to get it to work on mobile
-canvas.addEventListener("click", (e) => {keyboard_bringer.focus()})
+canvas.addEventListener("click", (e) => { keyboard_bringer.focus() })
 
 document.getElementById("write_another").addEventListener("click", commit_canvas);
 
@@ -269,7 +271,7 @@ link_enter_key_to_button(password2, login2)
 
 
 // first login box
-login1.addEventListener("click", async ()=>{
+login1.addEventListener("click", async () => {
     var success = await get_token(userid1.value, password1.value)
     console.log("suvves?", success)
     if (success) {
@@ -278,24 +280,24 @@ login1.addEventListener("click", async ()=>{
 })
 
 // second (text-sending) login box
-sendText.addEventListener("click", async ()=>{
+sendText.addEventListener("click", async () => {
     var success = await send_text(userid2.value)
     if (success) {
         hide(sendText)
         show(textPasswordArea)
     }
 })
-login2.addEventListener("click", async ()=>{
+login2.addEventListener("click", async () => {
     var success = await get_token(userid2.value, password2.value)
     if (success) {
         typing_mode(gt())
     }
 })
-sendTextAgain.addEventListener("click", async ()=>{
+sendTextAgain.addEventListener("click", async () => {
     send_text(userid2.value)
 })
 
-logoutButton.addEventListener("click", ()=>{
+logoutButton.addEventListener("click", () => {
     logout(gt())
 })
 
