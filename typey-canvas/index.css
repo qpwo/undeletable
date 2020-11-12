@@ -1,12 +1,19 @@
+body {
+  padding: 1em;
+}
 
 #canvasContainer {
-  background: #FF0;
+  background: #FF9;
   outline: black 3px solid;
+  max-width: 20em;
+  height: 20em;
+  position: relative;
 }
 .box {
   border: black 1px solid;
   margin-top: 0;
-  }
+  padding: 1em;
+}
 
 .nospace {
     margin: 0;
@@ -22,4 +29,12 @@
     position: absolute;
     z-index: 2;
     display: none;
+}
+
+#write_another {
+  margin: 1em;
+  float: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }

@@ -1,6 +1,10 @@
 # Undeletable
 An app that allows you to append to a notebook of sorts, but prohibits you from deleting anything from said notebook thing.
 
+## 2020-11-12
+
+- [ ] Keyboard thing working on mobile
+
 ## Uses
 - Write a cookbook
 - Write a stream of consciousness novel
