@@ -225,28 +225,44 @@ function drawchar(c) {
     drawcursor();
 }
 
+// only used for hacky mobile stuff
+function drawtextchange(e) {
+    var str = keyboard_bringer.value;
+    var key = str.charAt(str.length-1)
+    if (e.key == "Enter" || e.key == "Space" || e.key == "Backspace" || e.key == " ") {
+        return
+    }
+    drawchar(key)
+}
+
 function drawkeypress(e) {
     if (gt() == "") {
         return
     }
+    var key = e.key
+
     if (event.target == userid_box || event.target == password_box) {
         console.log("event in a real text field", e);
         return;
     }
-    if (e.key == "Backspace" || e.key == "Delete") {
+    if (key == "Backspace" || key == "Delete") {
         alert("NO! YOU CAN'T DO THAT!");
-    } else if (e.key == "Enter") {
+    } else if (key == "Enter") {
         commit_char(gt(), "\n")
         newline();
-    } else if (e.key == "Space") {
+    } else if (key == "Space") {
         drawchar(" ");
-    } else if (e.key == "Tab") {
+    } else if (key == "Tab") {
         drawchar("\t"); // TO NOT DO: doesn't work bc tab only make keydown
-    } else if (e.key.length == 1) {
+    } else if (key.length == 1) {
         drawchar(e.key);
+    } else {
+        alert("unknown key: ", key)
     }
     e.preventDefault();
     console.log("drew char", e);
+    //alert(e.keyCode)
+    //alert(JSON.stringify(e, null, 4));
 }
 
 // blink the cursor
@@ -256,8 +272,13 @@ window.setInterval(function () {
 }, 1000);
 
 // makes is so all keypresses are used for the canvas
-window.addEventListener("keypress", drawkeypress, true);
+//window.addEventListener("keypress", drawkeypress, true);
+keyboard_bringer.addEventListener("keypress", drawkeypress, true);
+keyboard_bringer.addEventListener("keyup", drawtextchange, true);
+keyboard_bringer.addEventListener("blur", ()=>{keyboard_bringer.value=""}, true);
+keyboard_bringer.addEventListener("click", ()=>{keyboard_bringer.value=""}, true);
 window.addEventListener("keyup", (e) => { e.preventDefault() }, true);
+
 // trying to get it to work on mobile
 canvas.addEventListener("click", (e) => { keyboard_bringer.focus() })
 
