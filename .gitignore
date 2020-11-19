@@ -2,3 +2,4 @@ FE/node_modules/
 __pycache__/
 BE/datapasswords.json
 secrets.json
+*.swp
